@@ -39,23 +39,53 @@ submits proposals or applies to jobs; it only reads.
 
 Keep both the bot token and chat ID handy for the next step.
 
-## 4. Create the routine
+## 4. Connect GitHub to Claude
+
+Routines read and write repository files through a GitHub connector, separate from the Upwork
+one:
+
+1. In Claude, go to Settings → Connectors and add the **GitHub** connector.
+2. Authorize the GitHub App and choose repository access — pick "Only select repositories" and
+   select your fork (or "All repositories" if you prefer). This is what lets a routine both list
+   your fork in its repository picker and commit `seen_jobs.json` updates back to `main`.
+
+![Connecting GitHub to Claude](images/gh.png)
+
+## 5. Create the routine
 
 In Claude's Routines UI:
 
-1. Create a new routine and connect it to your fork of this repository.
-2. Set the schedule to hourly (this is what the prompt was designed and tested against).
+1. [Create a new routine](https://claude.ai/code/routines) and select your fork from the
+   repository picker.
+
+   ![Selecting your fork as the routine's repository](images/1.png)
+
+2. Set the schedule to hourly.
+
+   ![Choosing the Schedule trigger](images/2.png)
+
 3. Add two secrets/environment variables on the routine:
    - `TELEGRAM_BOT_TOKEN` — the token from step 3.
    - `TELEGRAM_CHAT_ID` — the chat ID from step 3.
-4. Make sure the **Upwork MCP connector** is enabled for this routine.
-5. Paste the full contents of [`ROUTINE_PROMPT.md`](../ROUTINE_PROMPT.md) as the routine's prompt,
-   unmodified.
-6. Give the routine write access to your fork (it needs to commit `seen_jobs.json` updates back to
-   `main`).
-7. Save and enable the routine.
 
-## 5. Customize `profile.md`
+   ![Opening the cloud environment picker](images/3_1.png)
+
+   ![Setting TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID as environment variables](images/3_2.png)
+
+4. Make sure the **Upwork MCP connector** is enabled for this routine.
+
+   ![Upwork connector enabled on the routine](images/4.png)
+
+5. Paste the full contents of [`ROUTINE_PROMPT.md`](../ROUTINE_PROMPT.md) as the routine's prompt
+   — use it as-is, or tweak it to your liking.
+
+   ![Pasting the prompt into Instructions](images/5.png)
+
+6. Save and enable the routine.
+
+   ![The routine active and running hourly](images/6.png)
+
+## 6. Customize `profile.md`
 
 Skills, rate, and portfolio are pulled live from your Upwork profile — you don't need to duplicate
 them. Edit `profile.md` in your fork only for things Upwork's API can't tell the routine:
@@ -67,7 +97,7 @@ them. Edit `profile.md` in your fork only for things Upwork's API can't tell the
 
 Commit and push this to `main` before the first run.
 
-## 6. What happens on the first run
+## 7. What happens on the first run
 
 The very first time the routine runs, `seen_jobs.json` is empty, so it treats that run as a
 **seeding run**: it fetches currently-live matching jobs, marks all of their IDs as seen, and
